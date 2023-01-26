@@ -1,36 +1,58 @@
-n = int(input())
-data=list(map(int,input().split()))
-#print(An)
-plusCount,minusCount,mulCount,divCount=map(int,input().split())
-#print(plusCount,minusCount,mulCount,divCount)
+import sys
+input=sys.stdin.readline
+n=int(input())
 
-min_value=1e9
-max_value=-1e9
+an=list(map(int,input().split()))
+add,sub,mul,div=map(int,input().split())
+max_result=-1e9
+min_result=1e9
 
-def dfs(i , now):
-  global plusCount,minusCount,mulCount,divCount,min_value,max_value
-  if i ==n:
-    min_value=min(min_value,now)
-    max_value=max(max_value,now)
-  else:
-    if plusCount>0:
-      plusCount-=1
-      dfs(i+1,now+data[i])
-      plusCount+=1
-    if minusCount>0:
-      minusCount-=1
-      dfs(i+1,now-data[i])
-      minusCount+=1
-    if mulCount>0:
-      mulCount-=1
-      dfs(i+1,now*data[i])
-      mulCount+=1
-    if divCount>0:
-      divCount-=1
-      dfs(i+1,int(now/data[i]))
-      divCount+=1
+def cal(count,result,add,sub,mul,div):
+    # #print("count=",count)
+    # print("result=",result)
+    # print("asmd=",add,sub,mul,div)
+    global max_result,min_result
+    global an
+    if count==n-1:
+        if result>max_result:
+            max_result=result
+        if result<min_result:
+            min_result=result
+    else:
+        if add>0:
+            count+=1
+            temp_result=result+an[count]
+            add-=1
+            cal(count,temp_result,add,sub,mul,div)
+            count-=1
+            add+=1
+        if sub>0:
+            count+=1
+            temp_result=result-an[count]
+            sub-=1
+            cal(count,temp_result,add,sub,mul,div)
+            count-=1
+            sub+=1
+        if mul>0:
+            count+=1
+            temp_result=result*an[count]
+            mul-=1
+            cal(count,temp_result,add,sub,mul,div)
+            count-=1
+            mul+=1
+        if div>0:
+            count+=1
+            if result<0:
+                temp_result=-result
+                temp_result=temp_result//an[count]
+                temp_result=-temp_result
+            else:
+                temp_result=result//an[count]
+            div-=1
+            cal(count,temp_result,add,sub,mul,div)
+            count-=1
+            div+=1
 
-dfs(1,data[0])
-
-print(max_value)
-print(min_value)
+cal(0,an[0],add,sub,mul,div)
+print(max_result)
+print(min_result)
