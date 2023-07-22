@@ -41,8 +41,12 @@ def move_shark():
                 s=arr[i][j][0]
                 d= arr[i][j][1]
                 z=arr[i][j][2]
+                if d==1 or d==2:
+                    new_s=s%((r-1)*2)
+                else:
+                    new_s=s%((c-1)*2)
                 #속력만큼 반복하면서 이동해주기
-                for k in range(s):
+                for k in range(new_s):
                     nx=x+dx[d]
                     ny=y+dy[d]
                     #범위 밖인 경우 좌표 변경 , 방향 반대
