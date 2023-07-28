@@ -31,12 +31,18 @@ def find_left_idx(num,d):
     return left_idx
 
 n,q=map(int,input().split())
-box_lst=[]
 move_lst=[]
+box_dic={}
 for _ in range(n):
     x,y,w=map(int,input().split())
-    box_lst.append((x,y,w))
+    if (x,y) not in box_dic.keys():
+        box_dic[(x,y)]=w
+    else:
+        box_dic[(x,y)]+=w
+
+box_lst=list(box_dic.keys())
 box_lst.sort()
+
 for _ in range(q):
     d,v=map(int,input().split())
     move_lst.append((d,v))
@@ -48,6 +54,7 @@ result=0
 y_box_lst=copy.deepcopy(box_lst)
 y_box_lst.sort(key=lambda x:(x[1],x[0]))
 box_lst=[box_lst,y_box_lst]
+
 
 
 
@@ -85,8 +92,10 @@ for d ,v in move_lst:
 
 
         elif mn<=box_lst[flag][i][r_flag]<=mx and spos[r_flag]!=box_lst[flag][i][r_flag]:
-            result+=box_lst[flag][i][2]
+            #result+=box_lst[flag][i][2]
+            result+=box_dic[box_lst[flag][i]]
 
+            #print("+=",box_lst[flag][i][2])
     sx,sy=nx,ny
 
 
