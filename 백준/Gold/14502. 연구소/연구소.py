@@ -1,76 +1,59 @@
-from collections import deque
 from itertools import combinations
-import copy
+from collections import deque
 import sys
-input= sys.stdin.readline
-
-n,m=map(int,input().split())
-graph=[]
-for i in range(n):
-    graph.append(list(map(int,input().split())))
-#print(graph)
+input=sys.stdin.readline
 dx=[-1,0,1,0]
 dy=[0,1,0,-1]
-def virus(temp_graph):
+def in_range(x,y):
+    return 0<=x<n and 0<=y<m
+def get_result():
+    visited=[[0]*m for _ in range(n)]
     q=deque()
-    #print(virus_list)
-    for a,b in virus_list:
-        q.append((a,b))
+    for vx,vy in virus_lst:
+        q.append((vx,vy))
+        visited[vx][vy]=1
     while q:
         x,y=q.popleft()
-        temp_graph[x][y]=2
-        
-        for i in range(4):
-            nx=x+dx[i]
-            ny=y+dy[i]
-            
-            if 0<=nx<n and 0<=ny<m and temp_graph[nx][ny]==0:
+        for d in range(4):
+            nx=x+dx[d]
+            ny=y+dy[d]
+            if in_range(nx,ny) and visited[nx][ny]==0 and arr[nx][ny]==0:
                 q.append((nx,ny))
-                #print("nx ny ",nx,ny)
-    #print("in virus temp_graph",temp_graph)
-        
-    
-    
-def count_0(temp_graph):
-    #print("incount0 graph",temp_graph)
+                visited[nx][ny]=1
     count=0
     for i in range(n):
         for j in range(m):
-            if temp_graph[i][j]==0:
+            if arr[i][j]==0 and visited[i][j]==0:
                 count+=1
     return count
 
 
-    
 
+n,m=map(int,input().split())
 arr=[]
-virus_list=[]
+for _ in range(n):
+    arr.append(list(map(int,input().split())))
+
+virus_lst=[]
+zero_lst=[]
 for i in range(n):
     for j in range(m):
-        if graph[i][j]==0:
-            arr.append((i,j))
-        if graph[i][j]==2:
-            virus_list.append((i,j))
-comb=list(combinations(arr,3))
-#print(comb)
-max=0
-flag=0
-for a in comb:
-    
-    # if flag==10:
-    #     break
-    temp_graph=copy.deepcopy(graph)
-    temp_graph[a[0][0]][a[0][1]]=1
-    temp_graph[a[1][0]][a[1][1]]=1
-    temp_graph[a[2][0]][a[2][1]]=1
-    
-    virus(temp_graph)
-    # if flag==0:
-    #     print(temp_graph)
-    # flag+=1
-    temp=count_0(temp_graph)
-    #print(temp)
-    if temp>max:
-        max=temp
-print(max)
-        
+        if arr[i][j]==2:
+            virus_lst.append((i,j))
+        elif arr[i][j]==0:
+            zero_lst.append((i,j))
+
+case_lst=list(combinations(zero_lst,3))
+result=0
+for case in case_lst:
+    for x,y in case:
+        arr[x][y]=1
+    result=max(result,get_result())
+    for x,y in case:
+        arr[x][y]=0
+
+
+
+
+print(result)
+
