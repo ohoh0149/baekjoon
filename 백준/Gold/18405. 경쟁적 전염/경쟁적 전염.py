@@ -1,36 +1,35 @@
 from collections import deque
-from itertools import combinations
-import copy
-import sys
-input= sys.stdin.readline
-
-n,k=map(int, input().split())
-graph=[[0]*(n+1)]
-for i in range(n):
-    graph.append([0]+list(map(int,input().split())))
-#print(graph)
-s,x,y=map(int,input().split())
-
-q=deque()
-for i in range(1,n+1):
-    for j in range(1,n+1):
-        if graph[i][j]!=0:
-            q.append((graph[i][j],0,i,j))
-
-q=deque(sorted(q))
-#print(q)
-count=0
 dx=[-1,0,1,0]
 dy=[0,1,0,-1]
+def in_range(x,y):
+    return 0<=x<n and 0<=y<n
+
+n,k=map(int,input().split())
+arr=[list(map(int,input().split())) for _ in range(n)]
+s,sx,sy=map(int,input().split())
+
+
+virus_lst=[[] for _ in range(k+1)]
+
+for i in range(n):
+    for j in range(n):
+        if arr[i][j]>0:
+            virus_lst[arr[i][j]].append((i,j))
+q=deque()
+for viruses in virus_lst:
+    for x,y in viruses:
+        q.append((x,y,0))
 while q:
-    virus_num,time,tx,ty=q.popleft()
-    if time==s:
+    x,y,turn=q.popleft()
+    if turn ==s:
         break
-    for i in range(4):
-        nx=tx+dx[i]
-        ny=ty+dy[i]
-        if 1<=nx<=n and 1<=ny<=n and graph[nx][ny]==0:
-            graph[nx][ny]=virus_num
-            q.append((virus_num,time+1,nx,ny))
-print(graph[x][y])
-    
+    for d in range(4):
+        nx=x+dx[d]
+        ny=y+dy[d]
+        if in_range(nx,ny) and arr[nx][ny]==0:
+            arr[nx][ny]=arr[x][y]
+            q.append((nx,ny,turn+1))
+
+
+print(arr[sx-1][sy-1])
+
