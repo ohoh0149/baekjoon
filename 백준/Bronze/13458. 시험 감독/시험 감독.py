@@ -1,16 +1,13 @@
 n=int(input())
-a_lst=list(map(int,input().split()))
-b,c=map(int,input().split())
+A=list(map(int,input().split()))
+B,C=map(int,input().split())
 
-c_lst=[0]*n
+result=0
+for i,num in enumerate(A):
+    result+=1
+    if num>B:
+        result+=(num-B)//C
+        if (num-B)%C!=0:
+            result+=1
 
-for i in range(n):
-    if a_lst[i]-b<0:
-        continue
-    if (a_lst[i]-b)%c==0:
-        c_lst[i]=(a_lst[i]-b)//c
-    else:
-        c_lst[i]=(a_lst[i]-b)//c +1
-#print(c_lst)
-print(sum(c_lst)+n)
-
+print(result)
