@@ -1,45 +1,37 @@
-
-def cal(val1,val2,d):
-    if d==0:
-        result=val1+val2
-    if d==1:
-        result=val1-val2
-    if d==2:
-        result=val1*val2
-    if d==3:
-        if val1>=0:
-            result=val1//val2
+def cal(num1,num2,t):
+    if t==0:
+        return num1+num2
+    elif t==1:
+        return num1-num2
+    elif t==2:
+        return num1*num2
+    elif t==3:
+        if num1>0:
+            return num1//num2
         else:
-            result=-(-val1//val2)
-    return result
+            return -((-num1)//num2)
 
 
-def dfs(k,result):
+def dfs(k,val):
     global max_result
     global min_result
-    global b_lst
     if k==n-1:
-        max_result=max(result,max_result)
-        min_result=min(result,min_result)
+        max_result=max(max_result,val)
+        min_result=min(min_result,val)
         return
     for i in range(4):
-        if b_lst[i]>0:
-            b_lst[i]-=1
-            dfs(k+1,cal(result,a_lst[k+1],i))
-            b_lst[i]+=1
-    return
+        if c_lst[i]>0:
+            c_lst[i]-=1
+            dfs(k+1,cal(val,a_lst[k+1],i))
+            c_lst[i]+=1
 
 
 n=int(input())
 a_lst=list(map(int,input().split()))
+c_lst=list(map(int,input().split()))
 
-b_lst=list(map(int,input().split()))
-
-max_result=-1e9
-min_result=1e9
+min_result=1e10
+max_result=-1e10
 dfs(0,a_lst[0])
 print(max_result)
 print(min_result)
-
-
-
