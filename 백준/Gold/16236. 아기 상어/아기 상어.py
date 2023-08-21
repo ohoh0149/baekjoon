@@ -1,90 +1,67 @@
 from collections import deque
-
-n=int(input())
-graph=[]
-for i in range(n):
-    graph.append(list(map(int,input().split())))
-#print(graph)
-sharki=0
-sharkj=0
-fish_arr=[]
-for i in range(n):
-    for j in range(n):
-        if 1<=graph[i][j]<=6:
-            fish_arr.append(((i,j),graph[i][j]))
-        if graph[i][j]==9:
-            sharki,sharkj=i,j
-            graph[i][j]=0
-
-#print(fish_arr)
-cur_fish_index=0
-fish_arr.sort(key=lambda x: x[1])
-#print(fish_arr)
-
 dx=[-1,0,1,0]
 dy=[0,1,0,-1]
+def in_range(x,y):
+    return 0<=x<n and 0<=y<n
 
-shark_size=2
-size_level=0
-result=0
-count=0
-while 1:
+def find_fish():
+    move_count=1e9
+    q=deque()
+    visited=[[0]*n for _ in range(n)]
+    q.append((sx,sy))
+    visited[sx][sy]=1
+    pos_lst=[]
+    while q:
+        x,y=q.popleft()
+        if visited[x][y]>move_count:
+            break
+        for d in range(4):
+            nx=x+dx[d]
+            ny=y+dy[d]
+            if in_range(nx,ny) and visited[nx][ny]==0 and arr[nx][ny]<=sw :
+                if arr[nx][ny]==0 or arr[nx][ny]==sw:
+                    q.append((nx,ny))
+                    visited[nx][ny]=visited[x][y]+1
+                elif arr[nx][ny]<sw:
+                    pos_lst.append((nx,ny))
+                    visited[nx][ny]=visited[x][y]+1
+                    if move_count==1e9:
+                        move_count=visited[x][y]
+    if len(pos_lst)==0:
+        return -1,-1,-1
+    else:
+        pos_lst.sort()
+        return pos_lst[0][0],pos_lst[0][1],move_count
 
-    if len(fish_arr)==0 or fish_arr[0][1]>=shark_size  :
+
+
+
+
+n=int(input())
+arr=[list(map(int,input().split())) for _ in range(n)]
+
+sx,sy,sw,eat_count=-1,-1,2,0
+for i in range(n):
+    for j in range(n):
+        if arr[i][j]==9:
+            sx,sy=i,j
+            arr[i][j]=0
+            break
+    if sx!=-1:
         break
 
-    else:
-        #eat 실행 
-        #print(result)
-        visited=[[-1]*n for i in range(n)]
-        q=deque()
-        q.append((sharki,sharkj,0))
-        visited[sharki][sharkj]=0
-        choose=[]
-        while q:
-           #print("QQ")
-            tempi,tempj,templen=q.popleft()
-            #print(tempi,tempj,templen)
-            for i in range(4):
-                nx=tempi+dx[i]
-                ny=tempj+dy[i]
-                
-                if 0<=nx<n and 0<=ny<n and visited[nx][ny]==-1 and graph[nx][ny]<=shark_size:
-                    if graph[nx][ny]!=0 and graph[nx][ny]<shark_size:
-                        choose.append((nx,ny,templen+1))
-                    
-                    q.append((nx,ny,templen+1))
-                    visited[nx][ny]=templen+1
-        if len(choose)==0:
-            break
-        choose.sort(key=lambda x:x[1])
-        choose.sort(key=lambda x:x[0])
-        choose.sort(key=lambda x:x[2])
-        #print("choose",choose)
-        #print("result",result)
-        sharki=choose[0][0]
-        sharkj=choose[0][1]
-        #print(sharki,sharkj)
-        graph[sharki][sharkj]=0
-        size_level+=1
-        result+=choose[0][2]
-        
-        for i in fish_arr:
-            if i[0]==(sharki,sharkj):
-                #print(sharki,sharkj)
-                #print("testjslekjtlskejtlksejtlksejtlset")
-                #print(fish_arr)
-                fish_arr.remove(i)
-                #print(fish_arr)
-        if size_level==shark_size:
-            size_level=0
-            shark_size+=1
-            #print(shark_size)
-        #cur_fish_index+=1
+result=0
+while True:
+    nsx,nsy,mc=find_fish()
+    if nsx==-1:
+        break
+    sx,sy=nsx,nsy
+    result+=mc
+    arr[sx][sy]=0
+    eat_count+=1
+    if sw==eat_count:
+        sw+=1
+        eat_count=0
 print(result)
-            
-            
-        
-        
-        
-        
+
+
