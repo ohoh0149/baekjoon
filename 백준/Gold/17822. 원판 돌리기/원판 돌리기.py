@@ -1,103 +1,95 @@
-from collections import deque
-dx=[-1,0,1,0]
-dy=[0,1,0,-1]
-
-
-
-def turn_lst(i,d,k):
-    global arr
-    k=k%m
-    s=0
-    if d==0:
-        s=(s-k+m)%m
-    elif d==1:
-        s+=k
-    arr[i]=arr[i][s:]+arr[i][:s]
+import copy
 
 
 def turn(x,d,k):
-    for i in range(x-1,n,x):
-        turn_lst(i,d,k)
+    if d==0:
+        a=1
+    elif d==1:
+        a=-1
+    global arr
+    for i in range(1,n+1):
+        nx=i*x
+        if nx>n:
+            break
+        #nx<=n-1
+        before_list=arr[nx]
+        after_list=[0]*m
+        for j in range(m):
+            after_list[(j+a*k+m)%m]=before_list[j]
+        arr[nx]=after_list
 
-def in_range(x,y):
-    return 0<=x<n and 0<=y<m
 
+
+dx=[0,-1,0,1]
+dy=[1,0,-1,0]
+#삭제하면 트루 삭제안하면 false반환
 def remove_num():
     global arr
-    visited=[[0]*m for _ in range(n)]
-    remove_flag=False
-    for i in range(n):
+    new_arr=copy.deepcopy(arr)
+    remove_flag=0
+    for i in range(1,n+1):
         for j in range(m):
-            if visited[i][j]!=0 or arr[i][j]==0:
+            if arr[i][j]==0:
                 continue
-            visited[i][j]=1
-            q=deque()
-            q.append((i,j))
-            pos_lst=[(i,j)]
-            while q:
-                x,y=q.popleft()
-                for d in range(4):
-                    nx=x+dx[d]
-                    ny=(y+dy[d]+m)%m
-                    if in_range(nx,ny) and visited[nx][ny]==0 and arr[x][y]==arr[nx][ny]:
-                        pos_lst.append((nx,ny))
-                        q.append((nx,ny))
-                        visited[nx][ny]=1
-            if len(pos_lst)>=2:
-                remove_flag=True
-                for x,y in pos_lst:
-                    arr[x][y]=0
-    return remove_flag
+            for d in range(4):
+                nx=i+dx[d]
+                ny=(j+dy[d])%m
+                if arr[i][j]==arr[nx][ny]:
+                    new_arr[i][j]=0
+                    remove_flag=1
+    arr=new_arr
+    if remove_flag==1:
+        return True
+    else:
+        return False
 
 
-
-
-
-def normalize():
-    global  arr
-    count=0
+def normalization():
     sm=0
-    for i in range(n):
+    for i in range(1,n+1):
+        sm+=sum(arr[i])
+    count=0
+    for i in range(1,n+1):
         for j in range(m):
             if arr[i][j]!=0:
                 count+=1
-                sm+=arr[i][j]
     if count==0:
-        return True
-    avg=sm/count
-    #print("avg",avg)
-
-    for i in range(n):
+        return
+    md=sm/count
+    for i in range(1,n+1):
         for j in range(m):
-            if arr[i][j]!=0 :
-                if arr[i][j]>avg:
-                    arr[i][j]-=1
-                elif arr[i][j]<avg:
-                    arr[i][j]+=1
-    return False
+            if arr[i][j]==0:
+                continue
+            if arr[i][j]>md:
+                arr[i][j]-=1
+            elif arr[i][j]<md:
+                arr[i][j]+=1
+
+def get_result():
+    global result
+    for i in range(1,n+1):
+        for j in range(m):
+            result+=arr[i][j]
 
 
-n,m,t=map(int,input().split())
 
-arr=[list(map(int,input().split())) for _ in range(n)]
 
-#turn(2,0,0)
-def print_arr(arr):
-    for i in range(n):
-        print(arr[i])
-    print()
-
-for _ in range(t):
-    x,d,k=map(int,input().split())
-    turn(x,d,k)
-    #print_arr(arr)
-    flag=remove_num()
-    #print_arr(arr)
-    if not flag:
-        if normalize():
-            break
+n,m,q=map(int,input().split())
+arr=[[0]*m]
+for _ in range(n):
+    arr.append(list(map(int,input().split())))
+arr.append([0]*m)
+#print(arr)
+turn_info=[tuple(map(int,input().split())) for _ in range(q)]
 
 result=0
-for i in range(n):
-    result+=sum(arr[i])
+for a,b,c in turn_info:
+    turn(a,b,c)
+    #print(arr)
+    flag=remove_num()
+    if not flag:
+        normalization()
+
+    #print(arr)
+get_result()
 print(result)
