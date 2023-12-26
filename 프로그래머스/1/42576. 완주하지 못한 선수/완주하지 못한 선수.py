@@ -1,15 +1,10 @@
 def solution(participant, completion):
-    dic=dict()
-    for p in participant:
-        if p in dic:
-            dic[p]+=1
-        else:
-            dic[p]=1
-
-    for c in completion:
-        dic[c]-=1
+    participant.sort()
+    completion.sort()
     
-    for p in participant:
-        if dic[p]==1:
-            return p
+    for a,b in zip(participant,completion):
+        if a!=b:
+            return a
+    
+    return participant[-1]
     
