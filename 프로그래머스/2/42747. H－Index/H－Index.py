@@ -3,7 +3,7 @@ def solution(citations):
     citations.sort(reverse=True)
     #print(citations)
     
-    for h in range(1,100000):
+    for h in range(1,1001):
 
         if len(citations)>=h and citations[h-1]>=h:
             continue
