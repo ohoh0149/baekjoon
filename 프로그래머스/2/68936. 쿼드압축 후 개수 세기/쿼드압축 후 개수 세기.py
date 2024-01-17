@@ -2,9 +2,9 @@ def solution(arr):
     answer = [0,0]
 
     def dfs(arr):
-        if len(arr)==1:
-            answer[arr[0][0]]+=1
-            return
+        # if len(arr)==1:
+        #     answer[arr[0][0]]+=1
+        #     return
         n=len(arr)
         s=0
         for i in range(n):
