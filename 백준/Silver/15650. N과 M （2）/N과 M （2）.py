@@ -4,6 +4,8 @@ n,m=map(int,input().split())
 lst=[]
 def dfs(k,count):
     global lst
+    if count>m:
+        return
     if k==n:
         if count==m:
             print(*lst)
