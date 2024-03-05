@@ -25,17 +25,12 @@ for i in range(n):
             visited[i][j][0]=1
 
 def check(num1,num2):
-    if num1<num2:
+    if num1|num2==num1:
+        return True
+    else:
         return False
-    b_num1=bin(num1)
-    b_num2=bin(num2)
 
-    for i in range(-1,-len(b_num2),-1):
-        if b_num2[i]=="1":
-            if b_num1[i]=="1":
-                return True
 
-    return False
 
 
 
@@ -78,3 +73,4 @@ print(-1)
 # for i in range(len(b)-1,-1,-1):
 #     if b[i]=="1":
 #         print(i)
+
