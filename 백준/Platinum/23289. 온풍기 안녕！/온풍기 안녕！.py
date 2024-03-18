@@ -1,168 +1,166 @@
-from collections import deque
-
-def in_range(x,y):
-    return 0<=x<r and 0<=y<c
-
-def hot_one(hx,hy,hd):
-    global hot_arr
-    visited = [[0] * c for _ in range(r)]
-    sx = hx + dx[hd]
-    sy = hy + dy[hd]
-    q = deque()
-    q.append((sx, sy))
-    visited[sx][sy] = 5
-    while q:
-        x, y = q.popleft()
-        hot_arr[x][y] += visited[x][y]
-        if visited[x][y]==0:
-            break
-        #일단 먼저 상 우 하로 이동하자!
-        for d in range(-1, 2):
-            nx = x + dx[(hd + d) % 4]
-            ny = y + dy[(hd + d) % 4]
-            #일단 시작 점에서 다음 위치로 벽 있다면
-            if wall_arr[x][y][(hd+d)%4]==1:
-                continue
-            #d==-1 or d==1일때 추가로 벽있는지 확인
-            if d==-1 or d==1:
-                if in_range(nx,ny) and  wall_arr[nx][ny][hd]==1:
-                    continue
-                else:
-                    nx+=dx[hd]
-                    ny+=dy[hd]
-            #벽이 없는거 확인 완료
-            if in_range(nx,ny) and visited[nx][ny]==0:
-                visited[nx][ny]=visited[x][y]-1
-                q.append((nx,ny))
-    #print_arr(visited)
-
-
-def step1():
-    global hot_arr
-    for hx,hy,hd in hitter_lst:
-        hot_one(hx,hy,hd)
-
-
-#온도가 조절됨
-def step2():
-    global hot_arr
-    visited=[[0]*c for _ in range(r)]
-    new_arr=[[0]*c for _ in range(r)]
-    for i in range(r):
-        for j in range(c):
-            visited[i][j]=1
-            for d in range(4):
-                nx=i+dx[d]
-                ny=j+dy[d]
-                #범위 안이고 벽이 없고 이미 비교했던 곳이 아니라면
-                if in_range(nx,ny) and wall_arr[i][j][d]==0 and visited[nx][ny]==0:
-                    cha=hot_arr[i][j]-hot_arr[nx][ny]
-                    val=abs(cha)//4
-                    if cha>0:
-                        new_arr[i][j]-=val
-                        new_arr[nx][ny]+=val
-                    else:
-                        new_arr[i][j]+=val
-                        new_arr[nx][ny]-=val
-    for i in range(r):
-        for j in range(c):
-            hot_arr[i][j]+=new_arr[i][j]
-
-
-
-def step3():
-    global hot_arr
-    for i in range(r):
-        for j in range(c):
-            if i==0 or i==r-1 or j==0 or j==c-1 :
-                if hot_arr[i][j]>0:
-                    hot_arr[i][j]-=1
-
-
-
-
-def check_end():
-    for x,y in check_pos_lst:
-        if hot_arr[x][y]<k:
-            return False
-
-    return True
-
-
-
-
-
-
-
-
-
-def d_mapper(num):
-    if num==1:
-        return 1
-    elif num==2:
-        return 3
-    elif num==3:
-        return 0
-    elif num==4:
-        return 2
-
-def print_arr(arr):
-    for i in range(r):
-        print(*arr[i])
-    print()
-
-
 
 
 r,c,k=map(int,input().split())
-
-temp_arr=[]
-for _ in range(r):
-    temp_arr.append(list(map(int,input().split())))
+from collections import deque
 dx=[-1,0,1,0]
 dy=[0,1,0,-1]
-check_pos_lst=[]
-hitter_lst=[]
-hot_arr=[[0]*c for _ in range(r)]
-wall_arr=[[[0,0,0,0] for _ in range(c)] for _ in range(r)]
-w=int(input())
-for _ in range(w):
-    wx,wy,wt=map(int,input().split())
-    wx-=1
-    wy-=1
-    wall_arr[wx][wy][wt]=1
-    wnx=wx+dx[wt]
-    wny=wy+dy[wt]
-    if not in_range(wnx,wny):
-        continue
-    else:
-        wall_arr[wnx][wny][(wt+2)%4]=1
+def in_range(x,y):
+    return 0<=x<r and 0<=y<c
+temp_arr=[list(map(int,input().split())) for _ in range(r)]
 
+check_pos_lst=[]
+arr=[[0]*c for _ in range(r)]
+
+fan_pos_lst=[]
+
+cd_lst=[0,1,3,0,2]
 for i in range(r):
     for j in range(c):
         if temp_arr[i][j]==0:
             continue
-        elif temp_arr[i][j]==5:
+        if temp_arr[i][j]==5:
             check_pos_lst.append((i,j))
-        #온풍기
         else:
-            hitter_lst.append((i,j,d_mapper(temp_arr[i][j])))
+            d=cd_lst[temp_arr[i][j]]
+            fan_pos_lst.append((i,j,d))
 
-#print_arr(hot_arr)
-#print(check_pos_lst)
-#print(hitter_lst)
-#print_arr(wall_arr)
 
-result=101
-for turn in range(1,101):
-    step1()
-  #  print_arr(hot_arr)
-    step2()
- #   print_arr(hot_arr)
-    step3()
-    if check_end():
-        result=turn
+
+
+wall_arr=[[[0,0,0,0] for _ in range(c)] for _ in range(r)]
+w=int(input())
+for _ in range(w):
+    x,y,t=map(int,input().split())
+    x-=1
+    y-=1
+    wall_arr[x][y][t]=1
+    nx=x+dx[t]
+    ny=y+dy[t]
+    wall_arr[nx][ny][t+2]=1
+
+
+def print_arr(arr):
+    for i in range(r):
+        print(arr[i])
+    print()
+
+from collections import deque
+def wind(a,b,d):
+    global arr,dic,fan_arr
+    q=deque()
+    sx=a+dx[d]
+    sy=b+dy[d]
+    q.append((sx,sy))
+    visited=[[0]*c for _ in range(r)]
+    visited[sx][sy]=5
+    while q:
+        x,y=q.popleft()
+        if visited[x][y]==1:
+            break
+
+        #1
+        d_lst=[(d+3)%4,(d+1)%4]
+        for i in range(2):
+            d0=d_lst[i]
+            #벽 없고 범위 안, 방문x
+            nx0=x+dx[d0]
+            ny0=y+dy[d0]
+            if in_range(nx0,ny0) and visited[nx0][ny0]==0 and wall_arr[x][y][d0]==0:
+                nx1=nx0+dx[d]
+                ny1=ny0+dy[d]
+                if in_range(nx1,ny1) and visited[nx1][ny1]==0 and wall_arr[nx0][ny0][d]==0:
+                    q.append((nx1,ny1))
+                    visited[nx1][ny1]=visited[x][y]-1
+        #2
+
+        nx=x+dx[d]
+        ny=y+dy[d]
+        if in_range(nx,ny) and visited[nx][ny]==0 and wall_arr[x][y][d]==0:
+            q.append((nx,ny))
+            visited[nx][ny]=visited[x][y]-1
+
+    dic[(a,b,d)]=visited
+
+    for i in range(r):
+        for j in range(c):
+            if visited[i][j]!=0:
+                fan_arr[i][j]+=visited[i][j]
+
+
+def fun2():
+    global arr
+
+    add_arr=[[0]*c for _ in range(r)]
+    for i in range(r):
+        for j in range(c):
+            for d in range(1,3):
+                nx=i+dx[d]
+                ny=j+dy[d]
+                if not in_range(nx,ny):
+                    continue
+                if wall_arr[i][j][d]==1:
+                    continue
+                dif=arr[nx][ny]-arr[i][j]
+                #nx가 더 큼
+                if dif>0:
+                    abs_dif=dif//4
+                    add_arr[nx][ny]-=abs_dif
+                    add_arr[i][j]+=abs_dif
+
+                elif dif <0:
+                    abs_dif=(-dif)//4
+                    add_arr[nx][ny]+=abs_dif
+                    add_arr[i][j]-=abs_dif
+    for i in range(r):
+        for j in range(c):
+            arr[i][j]+=add_arr[i][j]
+
+
+
+
+
+def end_check():
+    for x,y in check_pos_lst:
+        if arr[x][y]<k:
+            return False
+    return True
+result=0
+dic=dict()
+
+fan_arr=[[0]*c for _ in range(r)]
+for x, y, d in fan_pos_lst:
+    wind(x, y, d)
+
+
+def wind_all():
+    for i in range(r):
+        for j in range(c):
+            arr[i][j]+=fan_arr[i][j]
+
+
+while True:
+    if result==101:
         break
-#print_arr(hot_arr)
-print(result)
 
+    # 1.바람이 한 번 나옴
+    wind_all()
+
+    # 2. 온도 조절
+    fun2()
+
+
+    # 3. 바깥 감소
+    for i in range(r):
+        for j in range(c):
+            if arr[i][j]>0 and ( i==0 or i==r-1 or j==0 or j==c-1):
+                arr[i][j]-=1
+
+
+
+    result+=1
+
+    if end_check():
+        break
+
+
+print(result)
