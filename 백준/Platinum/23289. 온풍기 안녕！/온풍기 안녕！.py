@@ -60,26 +60,42 @@ def wind(a,b,d):
 
         #1
         d_lst=[(d+3)%4,(d+1)%4]
-        for i in range(2):
-            d0=d_lst[i]
-            #벽 없고 범위 안, 방문x
-            nx0=x+dx[d0]
-            ny0=y+dy[d0]
-            if in_range(nx0,ny0) and visited[nx0][ny0]==0 and wall_arr[x][y][d0]==0:
-                nx1=nx0+dx[d]
-                ny1=ny0+dy[d]
-                if in_range(nx1,ny1) and visited[nx1][ny1]==0 and wall_arr[nx0][ny0][d]==0:
-                    q.append((nx1,ny1))
-                    visited[nx1][ny1]=visited[x][y]-1
-        #2
 
-        nx=x+dx[d]
-        ny=y+dy[d]
-        if in_range(nx,ny) and visited[nx][ny]==0 and wall_arr[x][y][d]==0:
-            q.append((nx,ny))
-            visited[nx][ny]=visited[x][y]-1
-
-    dic[(a,b,d)]=visited
+        # d-1,d / d / d+1,d
+        lst=[[(d+3)%4,d],[d],[(d+1)%4,d]]
+        for lst2 in lst:
+            cx,cy=x,y
+            flag=True
+            for cur_d in lst2:
+                cx=cx+dx[cur_d]
+                cy=cy+dy[cur_d]
+                if in_range(cx,cy) and visited[cx][cy]==0 and wall_arr[cx][cy][(cur_d+2)%4]==0:
+                    continue
+                else:
+                    flag=False
+            if flag:
+                visited[cx][cy]=visited[x][y]-1
+                q.append((cx,cy))
+    #     for i in range(2):
+    #         d0=d_lst[i]
+    #         #벽 없고 범위 안, 방문x
+    #         nx0=x+dx[d0]
+    #         ny0=y+dy[d0]
+    #         if in_range(nx0,ny0) and visited[nx0][ny0]==0 and wall_arr[x][y][d0]==0:
+    #             nx1=nx0+dx[d]
+    #             ny1=ny0+dy[d]
+    #             if in_range(nx1,ny1) and visited[nx1][ny1]==0 and wall_arr[nx0][ny0][d]==0:
+    #                 q.append((nx1,ny1))
+    #                 visited[nx1][ny1]=visited[x][y]-1
+    #     #2
+    #
+    #     nx=x+dx[d]
+    #     ny=y+dy[d]
+    #     if in_range(nx,ny) and visited[nx][ny]==0 and wall_arr[x][y][d]==0:
+    #         q.append((nx,ny))
+    #         visited[nx][ny]=visited[x][y]-1
+    #
+    # dic[(a,b,d)]=visited
 
     for i in range(r):
         for j in range(c):
