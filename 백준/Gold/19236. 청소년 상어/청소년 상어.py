@@ -1,84 +1,74 @@
 import copy
-def shark_move(x,y,dir,graph):
-    arr=[]
-    for i in range(3):
-        x=x+dx[dir-1]
-        y=y+dy[dir-1]
-        if 0<=x<4 and 0<=y<4 and graph[x][y][0]!=0:
-            arr.append([x,y])
-            
-        
-    
-    return arr
+arr=[]
+for _ in range(4):
+    temp_lst=list(map(int,input().split()))
+    temp=[]
+    for i in range(0,8,2):
+        temp.append([temp_lst[i],temp_lst[i+1]-1])
+    arr.append(temp)
 
 
-def process(x,y,dir,sum,cur_graph,count):
-    #print("sum,count",sum,count)
-    global result
-    #print("before move",cur_graph)
-    fish_move(cur_graph,x,y)
-    #print("after move",cur_graph)
-    next_shark=shark_move(x,y,dir,cur_graph)
-    #print("next_shark",next_shark)
-    #print()
-    #print()
-    if len(next_shark)==0:
-        if sum>result:
-            result=sum
-            return 
-    else:
-        for tx,ty in next_shark:
-            temp_graph=copy.deepcopy(cur_graph)
-            temp_graph[tx][ty][0]=0
-            dir=temp_graph[tx][ty][1]
-            process(tx,ty,dir,sum+cur_graph[tx][ty][0],temp_graph,count+1)
-        
-    
-    
-    return
+a,b=arr[0][0]
+arr[0][0][0]=-1
+
+#num의 pos찾기
+def find_num_pos(num,arr):
+    for i in range(4):
+        for j in range(4):
+            if arr[i][j][0]==num:
+                return (i,j)
+
+    return -1,-1
+
+def in_range(x,y):
+    return 0<=x<4 and 0<=y<4
 dx=[-1,-1,0,1,1,1,0,-1]
 dy=[0,-1,-1,-1,0,1,1,1]
 
-def fish_move(graph,sharkx,sharky):
-    for k in range(1,17):
-        k_flag=0
-        for i in range(4):
-            if k_flag==1:
+def move_fish(arr):
+    for fish_num in range(1,17):
+        x,y=find_num_pos(fish_num,arr)
+        if x==-1:
+            continue
+        fish_d=arr[x][y][1]
+        for d in range(8):
+            cur_d=(fish_d+d)%8
+            nx=x+dx[cur_d]
+            ny=y+dy[cur_d]
+            if in_range(nx,ny) and 0<=arr[nx][ny][0]<=16:
+                #arr[nx][ny],arr[x][y]
+                arr[x][y]=arr[nx][ny]
+                arr[nx][ny]=[fish_num,cur_d]
                 break
-            for j in range(4):
-                if k_flag==1:
-                    break
-                temp_dir=graph[i][j][1]
-                if graph[i][j][0]==k:
-                    for l in range(8):
-                        nx=i+dx[(temp_dir-1+l)%8]
-                        ny=j+dy[(temp_dir-1+l)%8]
-                        if 0<=nx<4 and 0<=ny<4 and not (nx==sharkx and ny==sharky):
-                            graph[i][j][1]=(temp_dir-1+l)%8+1
-                            graph[nx][ny],graph[i][j]=graph[i][j],graph[nx][ny]
-                            #print(graph,k)
-                            k_flag=1
-                            break
-                            
-                            
-                            
-                        
-                        
-                    
-                
-    return 0
+
 
 
 result=0
-start_graph=[[]for i in range(4)]
-for i in range(4):
-    a1,b1,a2,b2,a3,b3,a4,b4=map(int,input().split())
-    start_graph[i].append([a1,b1])
-    start_graph[i].append([a2,b2])
-    start_graph[i].append([a3,b3])
-    start_graph[i].append([a4,b4])
-result=start_graph[0][0][0]
-start_graph[0][0][0]=0
-#print(start_graph)
-process(0,0,start_graph[0][0][1],result,start_graph,0)
+def dfs(cur_arr,cur_result):
+    global result
+    result=max(result,cur_result)
+
+
+    move_fish(cur_arr)
+    sx,sy=find_num_pos(-1,cur_arr)
+    sd=cur_arr[sx][sy][1]
+    tx,ty=sx,sy
+    for _ in range(3):
+        tx=tx+dx[sd]
+        ty=ty+dy[sd]
+        if not in_range(tx,ty):
+            break
+        #물고기 있으면 ㄱ
+        if 1<=cur_arr[tx][ty][0]<=16:
+            temp_arr=copy.deepcopy(cur_arr)
+            temp_arr[sx][sy]=[0,0]
+            tem=temp_arr[tx][ty][0]
+            temp_arr[tx][ty][0]=-1
+            dfs(temp_arr,cur_result+tem)
+
+
+
+dfs(arr,a)
 print(result)
+
+
