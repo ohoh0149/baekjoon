@@ -1,111 +1,105 @@
-import copy
+n,k=map(int,input().split())
+lst=list(map(int,input().split()))
+
+result=0
 
 
-def get_next_arr(arr):
-    next_arr=[]
-    for j in range(len(arr[0])):
-        cur_lst=[]
-        for i in range(len(arr)-1,-1,-1):
-            cur_lst.append(arr[i][j])
-        next_arr.append(cur_lst)
-    cur_lst=[]
-    for j in range(len(arr[0]),len(arr[-1])):
-        cur_lst.append(arr[-1][j])
-    if len(cur_lst)>0:
-        next_arr.append(cur_lst)
-    return next_arr
-
-
-def step2(lst):
-    arr=[lst]
-    arr.insert(0,[arr[0].pop(0)])
-
-    while True:
-        next_arr=get_next_arr(arr)
-        if len(next_arr[0])>len(next_arr[-1]) or len(arr[0])==len(arr[-1]):
-            break
-        arr=next_arr
-    return arr
-
-dx=[-1,0,1,0]
-dy=[0,1,0,-1]
-
-def step3():
-    global arr
-    add_arr=[[0]*len(arr[-1]) for _ in range(len(arr))]
-    for i in range(len(arr)):
-        for j,num in enumerate(arr[i]):
-            l=len(arr[i])
-            for d in range(1,3):
-                nx=i+dx[d]
-                ny=j+dy[d]
-                if 0<=nx<len(arr) and 0<=ny<len(arr[i]):
-                    s=abs(arr[nx][ny]-arr[i][j])//5
-                    if s>0:
-                        if arr[nx][ny]>arr[i][j]:
-                            add_arr[nx][ny]-=s
-                            add_arr[i][j]+=s
-                        else:
-                            add_arr[nx][ny]+=s
-                            add_arr[i][j]-=s
-
-    for i,lst in enumerate(arr):
-        for j,num in enumerate(lst):
-            arr[i][j]+=add_arr[i][j]
-
-def step4(arr):
-    lst=[]
-    for j in range(len(arr[0])):
-        for i in range(len(arr)-1,-1,-1):
-            lst.append(arr[i][j])
-
-    for j in range(len(arr[0]),len(arr[-1])):
-        lst.append(arr[-1][j])
-    return lst
-
-
-def step5(lst):
-    arr=[lst[:n//2][::-1],lst[n//2:]]
-
-    lst1=arr[0]
-    lst2=arr[1]
-    m=n//2
-    new_arr=[lst2[:m//2][::-1],lst1[:m//2][::-1],lst1[m//2:],lst2[m//2:]]
+def step2_turn(arr):
+    c=len(arr[0])
+    r=len(arr)
+    new_arr=[]
+    for j in range(c):
+        temp_lst=[]
+        for i in range(r-1,-1,-1):
+            temp_lst.append(arr[i][j])
+        new_arr.append(temp_lst)
+    new_arr.append(arr[r-1][c:])
     return new_arr
 
 
 
+def step2(lst):
+    arr=[[lst[0]],lst[1:]]
+    while True:
+        next_arr=step2_turn(arr)
+        if len(next_arr[0])>len(next_arr[-1]):
+            break
+        arr=next_arr
+    return arr
 
 
+dx=[-1,0,1,0]
+dy=[0,1,0,-1]
 
-n,k=map(int,input().split())
-lst=list(map(int,input().split()))
+def step3(arr):
+    r=len(arr)
+    c=len(arr[-1])
+    def in_range(x,y):
+        return 0<=x<r and 0<=y<c
+    new_arr=[[0]*c for _ in range(r)]
+    for i in range(r):
+        for j,val in enumerate(arr[i]):
+            new_arr[i][j]=val
 
-#step2([1,2,3,4,5,6,7,8])
-#exit()
+    for i in range(r):
+        for j in range(c):
+            if new_arr[i][j]==0:
+                continue
+            for d in range(1,3):
+                nx=i+dx[d]
+                ny=j+dy[d]
+                if not in_range(nx,ny) or new_arr[nx][ny]==0:
+                    continue
+                v=(abs(arr[i][j]-arr[nx][ny]))//5
+                if v>0:
+                    if arr[i][j]>arr[nx][ny]:
+                        new_arr[i][j]-=v
+                        new_arr[nx][ny]+=v
+                    else:
+                        new_arr[i][j]+=v
+                        new_arr[nx][ny]-=v
+    return new_arr
 
-count=0
+
+def step4(arr):
+    r=len(arr)
+    c=len(arr[-1])
+    lst=[]
+    for j in range(c):
+        for i in range(r-1,-1,-1):
+            if arr[i][j]!=0:
+                lst.append(arr[i][j])
+    return lst
+
+
+def step5(lst):
+    l=len(lst)//4
+    arr=[list(reversed(lst[2*l:3*l])),lst[l:2*l],list(reversed(lst[0:l])),lst[3*l:]]
+    return arr
+
 while True:
+    #종료 조건
     if max(lst)-min(lst)<=k:
         break
-    count+=1
-    min_val=min(lst)
-    #1 최솟값 찾아서 +1
-    for idx,num in enumerate(lst):
-        if num==min_val:
+    result+=1
+    #1
+    mi=min(lst)
+    for idx,val in enumerate(lst):
+        if val==mi:
             lst[idx]+=1
-
-    #2 어항 쌓기
+    #2
     arr=step2(lst)
 
-    #3 수 조절
-    step3()
+    #3
+    arr=step3(arr)
+    #4
     lst=step4(arr)
-
+    #5
     arr=step5(lst)
 
-    step3()
+    arr=step3(arr)
+
     lst=step4(arr)
 
+print(result)
 
-print(count)
