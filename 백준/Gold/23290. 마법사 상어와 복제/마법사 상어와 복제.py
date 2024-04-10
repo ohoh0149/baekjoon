@@ -50,7 +50,7 @@ for _ in range(s):
 
     #3
     result_d_lst=[]
-    max_count=0
+    max_count=-1
     for d1 in range(4):
         for d2 in range(4):
             for d3 in range(4):
@@ -69,8 +69,6 @@ for _ in range(s):
                         cur_count+=sum(arr[cx][cy])
                         visit_set.add((cx,cy))
                 if not out_flag:
-                    if not result_d_lst:
-                        result_d_lst=[d1,d2,d3]
                     if max_count<cur_count:
                         max_count=cur_count
                         result_d_lst=[d1,d2,d3]
